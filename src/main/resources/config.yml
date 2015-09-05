@@ -1,0 +1,23 @@
+seconds for warning: 600
+seconds for damaging: 60
+seconds for half heart: 10
+damage sender: SUBTITLE+CHAT
+phase change sender: SUBTITLE+CHAT
+timer update sender: ACTIONBAR
+notification seconds: [1,2,3,4,5,6,7,8,9,10,15,30,60,90,120,180,240,300,360,420,480,540,600,660,720,780,840,900]
+areas:
+  example area 1:
+    x: "[0..+Inf)"
+    z: "(-Inf..+Inf)"
+    announce: Positive X coord
+    weight: 0
+  example area 2:
+    x: "[0..64]"
+    z: "[0..64]"
+    announce: 0,0 -> 64,64
+    weight: 0
+messages:
+  GET TO AREA: "&3Get to `&6%1$s&3` within &6%2$d &3seconds"
+  DAMAGE NOTIFICATION: "&3You took &4%1$d&3HP damage for being outside of the area"
+  DAMAGE PHASE START: "&3Now damaging players not within the area"
+  DAMAGE TICK: "&3Damaging players not in `&6%1$s&3` for the next &6%2$d&3 seconds"

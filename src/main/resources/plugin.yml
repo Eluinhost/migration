@@ -1,0 +1,13 @@
+name: Migration
+main: gg.uhc.migration.Entry
+version: 1.0-SNAPSHOT
+author: ghowden/Eluinhost
+database: false
+depend: []
+commands:
+  migration:
+    description: stops/starts migration tasks
+permissions:
+  uhc.migration:
+    description: Allows use of the /migration command
+    default: op
