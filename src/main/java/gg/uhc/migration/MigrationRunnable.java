@@ -175,7 +175,7 @@ public class MigrationRunnable extends BukkitRunnable {
         if (points == null) return;
 
         int times = 0;
-        while (points.get() <= secondsForHalfHeart) {
+        while (points.get() >= secondsForHalfHeart) {
             times++;
             // remove the points and increase the amount of times we need to damage
             points.remove(secondsForHalfHeart);
