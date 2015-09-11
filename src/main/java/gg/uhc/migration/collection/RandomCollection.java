@@ -23,6 +23,11 @@ public class RandomCollection<T> {
         map.put(total, entry);
     }
 
+    public void clear() {
+        this.map.clear();
+        total = 0;
+    }
+
     public T random() {
         double index = random.nextDouble() * total;
         return map.ceilingEntry(index).getValue();

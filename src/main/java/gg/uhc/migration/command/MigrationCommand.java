@@ -3,6 +3,10 @@ package gg.uhc.migration.command;
 import com.google.common.base.Optional;
 import gg.uhc.migration.MigrationRunnable;
 import gg.uhc.migration.MigrationRunnableFactory;
+import gg.uhc.migration.selection.AreaSelection;
+import gg.uhc.migration.selection.GlobalAreaSelection;
+import gg.uhc.migration.selection.IndividualAreaSelection;
+import gg.uhc.migration.selection.TeamAreaSelection;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +22,7 @@ public class MigrationCommand implements CommandExecutor, Listener {
     public static final String PERMISSION = "uhc.migration";
 
     public static final String NO_PERMISSION = ChatColor.RED + "You do not have permission to run this command";
-    public static final String USAGE = "" + ChatColor.BOLD + ChatColor.DARK_GRAY + "Usage: /migration start OR /migration stop";
+    public static final String USAGE = "" + ChatColor.BOLD + ChatColor.DARK_GRAY + "Usage: /migration start <global|individual|team> OR /migration stop";
     public static final String ALREADY_RUNNING = "" + ChatColor.BOLD + ChatColor.RED + "A migration task is already running, cancel the existing one first with: /migration stop";
     public static final String NOT_RUNNING = "" + ChatColor.BOLD + ChatColor.RED + "There is no migration task already running, start one with: /migration start";
     public static final String STARTED = "" + ChatColor.BOLD + ChatColor.GREEN + "New migration task started";
@@ -57,7 +61,25 @@ public class MigrationCommand implements CommandExecutor, Listener {
                 return true;
             }
 
-            MigrationRunnable runnable = factory.getNew();
+            if (args.length < 2) {
+                sender.sendMessage(USAGE);
+                return true;
+            }
+
+            AreaSelection selection;
+            switch (args[1].toLowerCase()) {
+                case "global":
+                    selection = new GlobalAreaSelection(); break;
+                case "individual":
+                    selection = new IndividualAreaSelection(); break;
+                case "team":
+                    selection = new TeamAreaSelection(); break;
+                default:
+                    sender.sendMessage(USAGE);
+                    return true;
+            }
+
+            MigrationRunnable runnable = factory.createWithSelector(selection);
             current = Optional.of(runnable);
 
             // once a second as required + register for events

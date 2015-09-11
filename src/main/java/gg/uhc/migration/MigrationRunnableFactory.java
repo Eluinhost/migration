@@ -2,6 +2,7 @@ package gg.uhc.migration;
 
 import com.google.common.base.Preconditions;
 import gg.uhc.migration.messages.MessageSender;
+import gg.uhc.migration.selection.AreaSelection;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class MigrationRunnableFactory {
         return this;
     }
 
-    public MigrationRunnable getNew() {
+    public MigrationRunnable createWithSelector(AreaSelection selection) {
         Preconditions.checkState(warningPhaseSeconds != null);
         Preconditions.checkState(damagePhaseSeconds != null);
         Preconditions.checkState(secondsForHalfHeart != null);
@@ -76,6 +77,9 @@ public class MigrationRunnableFactory {
         Preconditions.checkState(notificationTicks != null);
         Preconditions.checkState(playerStrings != null);
 
-        return new MigrationRunnable(phaseStartSender, updatesSender, damageSender, warningPhaseSeconds, damagePhaseSeconds, secondsForHalfHeart, potentialAreas, notificationTicks, playerStrings);
+        // add the areas onto the selector
+        selection.setPotentialAreas(potentialAreas);
+
+        return new MigrationRunnable(selection, phaseStartSender, updatesSender, damageSender, warningPhaseSeconds, damagePhaseSeconds, secondsForHalfHeart, notificationTicks, playerStrings);
     }
 }

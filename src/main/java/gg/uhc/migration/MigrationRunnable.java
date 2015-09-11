@@ -1,9 +1,10 @@
 package gg.uhc.migration;
 
 import com.google.common.collect.Maps;
-import gg.uhc.migration.collection.RandomCollection;
 import gg.uhc.migration.messages.MessageSender;
+import gg.uhc.migration.selection.AreaSelection;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +21,7 @@ public class MigrationRunnable extends BukkitRunnable {
     }
 
     // weighted collection of all areas we can pull from
-    protected final RandomCollection<Area> potentialAreas;
+//    protected final RandomCollection<Area> potentialAreas;
 
     // how many seconds to count before switching to the next area
     protected final int warningPhaseSeconds;
@@ -37,8 +38,8 @@ public class MigrationRunnable extends BukkitRunnable {
     // Stores how many seconds of damage the player has accumulated
     protected final Map<UUID, PlayerDamagePoints> owedDamage = Maps.newHashMap();
 
-    // Holds the current selected area we will keep checking
-    protected Area current;
+    // Holds the current selected areas we will keep checking
+    protected AreaSelection selection;
 
     // current running phase
     protected Phase currentPhase = Phase.WARNING;
@@ -50,19 +51,14 @@ public class MigrationRunnable extends BukkitRunnable {
     protected final PlayerStrings _;
 
     protected MigrationRunnable(
+            AreaSelection selection,
             MessageSender phaseStartSender, MessageSender updatesSender, MessageSender damageSender,
             int warningPhaseSeconds, int damagePhaseSeconds,
             int secondsForHalfHeart,
-            List<Area> potentialAreas,
             List<Long> notificationTicks,
             PlayerStrings _)
     {
-        // build a random collection of all areas
-        this.potentialAreas = new RandomCollection<>();
-        for (Area area : potentialAreas) {
-            this.potentialAreas.add(area, area.getWeight());
-        }
-
+        this.selection = selection;
         this.phaseStartSender = phaseStartSender;
         this.updatesSender = updatesSender;
         this.damageSender = damageSender;
@@ -79,12 +75,14 @@ public class MigrationRunnable extends BukkitRunnable {
         currentPhase = Phase.WARNING;
         countdown = warningPhaseSeconds;
 
-        // pull a random area to warn about
-        current = potentialAreas.random();
+        // randomize the area to warn about
+        selection.randomize();
 
         // warn everyone with a title just the once
-        String message = _.format("GET TO AREA", current.getAnnounce(), countdown);
         for (Player player : Bukkit.getOnlinePlayers()) {
+            Area area = selection.getForUUID(player.getUniqueId());
+            String message = _.format("GET TO AREA", area.getAnnounce(), countdown);
+
             phaseStartSender.sendPlayerMessage(player, message);
         }
     }
@@ -121,9 +119,10 @@ public class MigrationRunnable extends BukkitRunnable {
         if (currentPhase == Phase.WARNING) {
             // update people with how long they have to get to the area
             if (announceUpdate) {
-                String message = _.format("GET TO AREA", current.getAnnounce(), countdown);
-
                 for (Player player : Bukkit.getOnlinePlayers()) {
+                    Area area = selection.getForUUID(player.getUniqueId());
+                    String message = _.format("GET TO AREA", area.getAnnounce(), countdown);
+
                     updatesSender.sendPlayerMessage(player, message);
                 }
             }
@@ -133,11 +132,11 @@ public class MigrationRunnable extends BukkitRunnable {
 
         // Phase.DAMAGING
 
-        String message = announceUpdate ? _.format("DAMAGE TICK", current.getAnnounce(), countdown) : "";
         for (Player player : Bukkit.getOnlinePlayers()) {
             Location location = player.getLocation();
+            Area area = selection.getForUUID(player.getUniqueId());
 
-            boolean inside = current.inside(location.getX(), location.getZ());
+            boolean inside = area.inside(location.getX(), location.getZ());
 
             // if they are not inside the current selection add a point of damage to them
             if (!inside) {
@@ -150,11 +149,15 @@ public class MigrationRunnable extends BukkitRunnable {
                 }
 
                 // add one onto the owed damage and pay any health needed
-                damage.increment();
-                attemptToApplyDamage(player);
+                GameMode mode = player.getGameMode();
+                if (mode == GameMode.SURVIVAL || mode == GameMode.ADVENTURE) {
+                    damage.increment();
+                    attemptToApplyDamage(player);
+                }
             }
 
             if (announceUpdate) {
+                String message = _.format("DAMAGE TICK", area.getAnnounce(), countdown);
                 updatesSender.sendPlayerMessage(player, message);
             }
         }
@@ -180,7 +183,7 @@ public class MigrationRunnable extends BukkitRunnable {
 
         // if they owe health
         if (times > 0) {
-            player.setHealth(player.getHealth() - (times));
+            player.setHealth(Math.max(0, player.getHealth() - (times)));
             damageSender.sendPlayerMessage(player, _.format("DAMAGE NOTIFICATION", times));
         }
     }
