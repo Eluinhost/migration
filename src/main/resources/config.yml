@@ -17,7 +17,7 @@ areas:
     announce: 0,0 -> 64,64
     weight: 0
 messages:
-  GET TO AREA: "&3Get to `&6%1$s&3` within &6%2$d &3seconds"
-  DAMAGE NOTIFICATION: "&3You took &4%1$d&3HP damage for being outside of the area"
-  DAMAGE PHASE START: "&3Now damaging players not within the area"
-  DAMAGE TICK: "&3Damaging players not in `&6%1$s&3` for the next &6%2$d&3 seconds"
+  GET TO AREA: "&3Get to `&6%1$s&3` in the next &6%2$d &3seconds"
+  DAMAGE NOTIFICATION: "&3You took &4%1$d&3HP damage for being outside your area"
+  DAMAGE PHASE START: "&3Now damaging players not inside their designated area"
+  DAMAGE TICK: "&3Damaging players not within `&6%1$s&3` for the next &6%2$d&3 seconds"
