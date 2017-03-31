@@ -79,4 +79,28 @@ object RandomCollectionSpec : Spek({
             results[2] shouldBe 40
         }
     }
+
+    context("with multiple items equal weight") {
+        beforeEachTest {
+            collection.add(element = 10, weight = 1)
+            collection.add(element = 2, weight = 1)
+
+            collection.random = object: Random() {
+                private var attempt = 0
+
+                override fun nextInt(max: Int): Int =
+                    attempt++ / 50
+            }
+        }
+
+        it("should select based on weights") {
+            val results = (0 until 100)
+                .map { collection.get() }
+                .groupBy { it }
+                .mapValues { it.value.size }
+
+            results[10] shouldBe 50
+            results[2] shouldBe 50
+        }
+    }
 })
