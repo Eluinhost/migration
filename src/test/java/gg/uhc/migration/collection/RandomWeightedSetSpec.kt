@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import java.util.*
 
 @RunWith(JUnitPlatform::class)
-object RandomCollectionSpec : Spek({
+object RandomWeightedSetSpec : Spek({
     var collection = RandomWeightedSet<Int>()
 
     beforeEachTest {
