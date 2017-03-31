@@ -64,7 +64,8 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
         this.inverse.clear()
     }
 
-    override val size: Int = map.size
+    override val size: Int
+        get() = map.size
 
     override fun contains(element: WeightedEntry<T>): Boolean = inverse.containsKey(element)
 
