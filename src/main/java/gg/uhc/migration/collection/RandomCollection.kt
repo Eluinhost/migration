@@ -84,6 +84,12 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
 
     override fun iterator(): MutableIterator<WeightedEntry<T>> = throw UnsupportedOperationException()
 
+    fun removeElement(element: T): Boolean {
+        val found = map.entries.firstOrNull { it.value.item == element }?.value ?: return false
+
+        return remove(found)
+    }
+
     override fun remove(element: WeightedEntry<T>): Boolean {
         if (!inverse.containsKey(element))
             return false
