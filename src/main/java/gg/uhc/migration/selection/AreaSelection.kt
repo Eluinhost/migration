@@ -1,11 +1,11 @@
 package gg.uhc.migration.selection
 
 import gg.uhc.migration.Area
-import gg.uhc.migration.collection.RandomCollection
+import gg.uhc.migration.collection.RandomWeightedSet
 import java.util.*
 
 abstract class AreaSelection {
-    protected val potentialAreas = RandomCollection<Area>()
+    protected val potentialAreas = RandomWeightedSet<Area>()
 
     fun setPotentialAreas(areas: Collection<Area>) {
         potentialAreas.clear()
