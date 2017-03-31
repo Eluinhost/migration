@@ -36,8 +36,7 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
     fun getWithWeight(): WeightedEntry<T> {
         checkState(map.size != 0, "No items have been added to the collection yet")
 
-        val index = random.nextInt(lastKey)
-        println (index)
+        val index = random.nextInt(lastKey) + 1
         return map.ceilingEntry(index).value
     }
 
