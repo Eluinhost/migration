@@ -18,7 +18,6 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
 
     private val map = Maps.newTreeMap<Double, WeightedEntry<T>>()
     private val inverse = mutableMapOf<WeightedEntry<T>, Double>()
-    private var lastKey = 0.0
 
     /**
      * Automatic unwrap version of #getWithWeight
@@ -34,9 +33,9 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
      * Returns a random item from the collection
      */
     fun getWithWeight(): WeightedEntry<T> {
-        checkState(lastKey != 0.0, "No items have been added to the collection yet")
+        checkState(map.size != 0, "No items have been added to the collection yet")
 
-        val index = random.nextDouble() * lastKey
+        val index = random.nextDouble() * map.lastKey()
         return map.ceilingEntry(index).value
     }
 
@@ -48,11 +47,11 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
             return false
 
         // Increment key
-        lastKey += element.weight
+        val nextKey = map.lastKey() + element.weight
 
         // add to maps
-        map.put(lastKey, element)
-        inverse.put(element, lastKey)
+        map.put(nextKey, element)
+        inverse.put(element, nextKey)
 
         return true
     }
@@ -60,7 +59,6 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
     override fun clear() {
         this.map.clear()
         this.inverse.clear()
-        lastKey = 0.0
     }
 
     override val size: Int = map.size
