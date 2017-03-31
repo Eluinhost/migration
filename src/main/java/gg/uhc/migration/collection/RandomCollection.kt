@@ -5,22 +5,20 @@ import com.google.common.base.Preconditions.checkState
 import com.google.common.collect.Maps
 import java.util.*
 
-data class WeightedEntry<out T>(val weight: Double, val item: T)
+data class WeightedEntry<out T>(val weight: Int, val item: T)
 
 /**
  * Stores items and retrieves which can be retrieved randomly calculated based on the weight of each item.
  * This collection is 100% not thread safe
  */
 class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
-    companion object {
-        private val random = Random()
-    }
+    var random = Random()
 
-    private val map = Maps.newTreeMap<Double, WeightedEntry<T>>()
-    private val inverse = mutableMapOf<WeightedEntry<T>, Double>()
+    private val map = Maps.newTreeMap<Int, WeightedEntry<T>>()
+    private val inverse = mutableMapOf<WeightedEntry<T>, Int>()
 
-    private val lastKey: Double
-        get() = if (map.size > 0) map.lastKey() else 0.0
+    private val lastKey: Int
+        get() = if (map.size > 0) map.lastKey() else 0
 
     /**
      * Automatic unwrap version of #getWithWeight
@@ -30,7 +28,7 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
     /**
      * Wrapping version of add(WeightedEntry)
      */
-    fun add(element: T, weight: Double) = add(WeightedEntry(weight, element))
+    fun add(element: T, weight: Int) = add(WeightedEntry(weight, element))
 
     /**
      * Returns a random item from the collection
@@ -38,7 +36,8 @@ class RandomCollection<T> : MutableCollection<WeightedEntry<T>> {
     fun getWithWeight(): WeightedEntry<T> {
         checkState(map.size != 0, "No items have been added to the collection yet")
 
-        val index = random.nextDouble() * lastKey
+        val index = random.nextInt(lastKey)
+        println (index)
         return map.ceilingEntry(index).value
     }
 

@@ -3,10 +3,8 @@ package gg.uhc.migration
 import com.google.common.collect.Maps
 import gg.uhc.migration.messages.MessageSender
 import gg.uhc.migration.selection.AreaSelection
-import gg.uhc.migration.util.tap
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.UUID

@@ -10,7 +10,7 @@ abstract class AreaSelection {
     fun setPotentialAreas(areas: Collection<Area>) {
         potentialAreas.clear()
         areas.forEach {
-            this.potentialAreas.add(it, it.weight.toDouble())
+            this.potentialAreas.add(it, it.weight)
         }
     }
 
