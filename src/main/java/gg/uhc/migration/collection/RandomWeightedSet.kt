@@ -45,7 +45,7 @@ class RandomWeightedSet<T> : MutableSet<T> {
     fun add(element: T, weight: Int): Boolean {
         checkArgument(weight > 0, "Weight must be a positive integer (non zero)")
 
-        if (map.containsValue(element))
+        if (metadata.containsKey(element))
             return false
 
         // Increment internalKey
@@ -71,9 +71,9 @@ class RandomWeightedSet<T> : MutableSet<T> {
     override val size: Int
         get() = map.size
 
-    override fun contains(element: T): Boolean = map.containsValue(element)
+    override fun contains(element: T): Boolean = metadata.containsKey(element)
 
-    override fun containsAll(elements: Collection<T>): Boolean = map.values.containsAll(elements)
+    override fun containsAll(elements: Collection<T>): Boolean = metadata.keys.containsAll(elements)
 
     override fun isEmpty(): Boolean = map.isEmpty()
 
@@ -153,7 +153,7 @@ class RandomWeightedSet<T> : MutableSet<T> {
 
     override fun retainAll(elements: Collection<T>): Boolean {
         // Take a copy of the values we need to remember
-        val temp = map.values.intersect(elements)
+        val temp = metadata.keys.intersect(elements)
         // Take a copy of the weights
         val weights = temp.map { metadata[it]!!.weight }
 
